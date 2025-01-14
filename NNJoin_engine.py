@@ -73,7 +73,7 @@ class Worker(QtCore.QObject):
     */
     '''
     # Define the signals used to communicate back to the application
-    progress = QtCore.pyqtSignal(float)  # For reporting progress
+    progress = QtCore.pyqtSignal(int)  # For reporting progress
     status = QtCore.pyqtSignal(str)      # For reporting status
     error = QtCore.pyqtSignal(str)       # For reporting errors
     # Signal for sending over the result:
@@ -194,7 +194,7 @@ class Worker(QtCore.QObject):
                 self.finished.emit(False, None)
                 return
             # Set the geometry type and prepare the output layer
-            inpWkbTypetext = QgsWkbTypes.displayString(int(self.inpWkbType))
+            inpWkbTypetext = QgsWkbTypes.displayString(self.inpWkbType)
             # self.inputmulti = QgsWkbTypes.isMultiType(self.inpWkbType)
             # self.status.emit('wkbtype: ' + inpWkbTypetext)
             # geometryType = self.inpvl.geometryType()
@@ -287,14 +287,14 @@ class Worker(QtCore.QObject):
                         # Allow user abort
                         if self.abort is True:
                             break
-                        self.joinlind.insertFeature(feat)
+                        self.joinlind.addFeature(feat)
                         self.calculate_progress()
                 else:
                     for feat in self.joinvl.getFeatures():
                         # Allow user abort
                         if self.abort is True:
                             break
-                        self.joinlind.insertFeature(feat)
+                        self.joinlind.addFeature(feat)
                         self.calculate_progress()
                 self.status.emit('Join layer index created!')
                 self.processed = 0
@@ -383,7 +383,7 @@ class Worker(QtCore.QObject):
             perc_new = (self.processed * 100) / self.feature_count
             if perc_new > self.percentage:
                 self.percentage = perc_new
-                self.progress.emit(self.percentage)
+                self.progress.emit(int(self.percentage))
 
     def kill(self):
         '''Kill the thread by setting the abort flag'''
